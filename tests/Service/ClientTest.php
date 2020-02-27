@@ -16,6 +16,28 @@ final class ClientServiceTest extends TestCase
     /**
      * @test
      */
+    public function execute_WillThrowThrowable()
+    {
+        $httpClientObserver = $this->prophesize(HttpClientInterface::class);
+
+        // HttpClient request throw TransportExceptionInterface
+        $httpClientObserver
+            ->request(Argument::type('string'), Argument::type('string'))
+            ->willThrow(\Throwable::class);
+
+        // Instantiate Client
+        $client = new ClientService(
+            $httpClientObserver->reveal()
+        );
+
+        $this->expectException(RequestErrorException::class);
+
+        $client->execute();
+    }
+
+    /**
+     * @test
+     */
     public function execute_WillThrowException()
     {
         $httpClientObserver = $this->prophesize(HttpClientInterface::class);
